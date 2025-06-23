@@ -6,8 +6,17 @@ const userMasterSchema = new mongoose.Schema(
     game: {
       type: String,
     },
+    id: {
+      type: String,
+      required: true,
+      unique: true
+    },
     mobileNumber: {
       type: String,
+    },
+    password: {
+      type: String,
+        required: true,
     },
     upiId: {
       type: String,
@@ -33,6 +42,10 @@ const userMasterSchema = new mongoose.Schema(
         ref: "payment",
       },
     ],
+    deviceID: {
+      type: String,
+      required: true,
+    },
     game_version: { type: String },
   },
   {

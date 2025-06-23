@@ -10,7 +10,7 @@ const AdminModel = require('../models/admin.model');
  * @description Save New Game in Database
  * @returns Game object
  ******************************************************/
-const add_game = async(req, res) => {
+const add_game = async (req, res) => {
     try {
         const {
             gamename
@@ -55,7 +55,7 @@ const add_game = async(req, res) => {
  * @description get TrendingGames
  * @returns Game object
  ******************************************************/
-const get_TrendingGame = async(req, res) => {
+const get_TrendingGame = async (req, res) => {
     try {
         // Fetch the list of trending games
         const Games = await Game.find();
@@ -90,7 +90,7 @@ const get_TrendingGame = async(req, res) => {
 };
 
 // Helper function to get total revenue for a specific game
-const getGameTotalRevenue = async(game) => {
+const getGameTotalRevenue = async (game) => {
     try {
         // Adjust the model based on the game type (TwoCardTPBet or DragenTigerLionBet)
         const BetModel = game === 'TwoCardTP' ? TwoCardTPBet : DragenTigerLionBet;
@@ -117,7 +117,7 @@ const getGameTotalRevenue = async(game) => {
  * @description get Top Plaers
  * @returns Player object
  ******************************************************/
-const get_TopPlayer = async(req, res) => {
+const get_TopPlayer = async (req, res) => {
     try {
         const players = await UserMasterModel.find().sort({
             coins: -1
@@ -145,7 +145,7 @@ const get_TopPlayer = async(req, res) => {
  * @description get Active Users currently
  * @returns user object
  ******************************************************/
-const get_ActiveUsers = async(req, res) => {
+const get_ActiveUsers = async (req, res) => {
     try {
         const results = await UserMasterModel.find({
             status: "Active"
@@ -177,9 +177,9 @@ const get_ActiveUsers = async(req, res) => {
  * @description get All Users
  * @returns user object
  ******************************************************/
-const get_AllUsers = async(req, res) => {
+const get_AllUsers = async (req, res) => {
     try {
-        const results = await UserMasterModel.find();
+        const results = await UserMasterModel.find().sort({ createdAt: -1 });
         if (!results) {
             return res.status(404).json({
                 message: "Not Found Any Record"
@@ -239,20 +239,20 @@ const get_revenue = async (req, res) => {
     try {
         const admin = await AdminModel.findOne();
         if (!admin) {
-          return res.status(404).json({ message: "user not found" })
+            return res.status(404).json({ message: "user not found" })
         };
         // console.log(admin)
-        const credit =admin.creditedAmount;
-        const debit =admin.debitedAmount;
+        const credit = admin.creditedAmount;
+        const debit = admin.debitedAmount;
         res.status(200).json({
-                        message: "Revenue Object",
-                        credit, debit
-                    });
+            message: "Revenue Object",
+            credit, debit
+        });
     } catch (error) {
         console.error("Error get Revenue:", error);
-                res.status(500).json({
-                    message: "Internal Server Error"
-                });
+        res.status(500).json({
+            message: "Internal Server Error"
+        });
     }
 }
 
@@ -263,7 +263,7 @@ const get_revenue = async (req, res) => {
  * @description Add Coins to the User Account
  * @returns Success Message
  ******************************************************/
-const add_coins = async(req, res) => {
+const add_coins = async (req, res) => {
     try {
         const {
             userId

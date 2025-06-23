@@ -7,11 +7,11 @@ const adminSchema = new mongoose.Schema({
     },
     otp: {
         type: Number,
-        default:0,
+        default: 0,
     },
     availableCoinsToDistribute: {
         type: Number,
-        default:0,
+        default: 0,
     },
     password: {
         type: String,
