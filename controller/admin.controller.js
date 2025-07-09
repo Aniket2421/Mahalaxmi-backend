@@ -211,40 +211,49 @@ const getAvailableCoins = async (req, res) => {
 
 const addUser = async (req, res) => {
   // Validate input
-  const { mobileNumber, password } = req.body;
-
-  if (!mobileNumber || !password) {
-    return res.status(400).json({ message: 'Mobile number and password are required.' });
-  }
-
-  if (!/^[0-9]{10}$/.test(mobileNumber)) {
-    return res.status(400).json({ message: 'Invalid mobile number format. It must be 10 digits.' });
-  }
-
-  // Generate a random ID with "00" as the prefix
-  const generateRandomId = () => {
-    const randomSixDigits = Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit number
-    return `00${randomSixDigits}`;
-  };
-
   try {
-    const id = generateRandomId();
+    const { id, password, coins,  } = req.body;
 
-    // Hash the password
-    const hashedPassword = password
-
-    // Create and save the user
-    const user = new UserMasterModel({ id, mobileNumber, password: hashedPassword });
-    await user.save();
-
-    res.status(201).json({ message: 'User added successfully!', user });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'Mobile number already exists.' });
+    // Validate required fields
+    if (!id || !password ) {
+      return res.status(400).json({
+        status: 400,
+        message: "id, password, and deviceID are required",
+      });
     }
-    res.status(500).json({ message: 'Something went wrong.', error });
+
+    // Check for duplicate user
+    const existingUser = await UserMasterModel.findOne({ id });
+    if (existingUser) {
+      return res.status(409).json({
+        status: 409,
+        message: "User already exists with this ID",
+      });
+    }
+
+    // Create new user
+    const newUser = new UserMasterModel({
+      id,
+      password,
+      coins: coins || 0,
+    });
+
+    await newUser.save();
+
+    return res.status(201).json({
+      status: 201,
+      message: "User created successfully",
+      user: {
+        id: newUser.id,
+        coins: newUser.coins,
+        deviceID: newUser.deviceID,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ status: 500, message: error.message });
   }
-}
+};
+
 
 
 
@@ -252,11 +261,11 @@ const addUser = async (req, res) => {
 
 
 const updateUser = async (req, res) => {
-  const { id, password } = req.body;
+  const { id, password, coins } = req.body;
 
-  // Validate that an ID and password are provided
-  if (!id || !password) {
-    return res.status(400).json({ message: "User ID and new password are required." });
+  // Validate input
+  if (!id) {
+    return res.status(400).json({ message: "User ID is required." });
   }
 
   try {
@@ -267,16 +276,30 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Hash the new password and update only the password field
-    const hashedPassword = password;
-    user.password = hashedPassword;
+    // Update password (if provided)
+    if (password) {
+      user.password = password;
+    }
 
-    // Save the updated user details
+    // Update coins (if provided)
+    if (coins !== undefined) {
+      user.coins = coins;
+    }
+
+    // Save changes
     await user.save();
 
-    res.status(200).json({ message: "Password updated successfully!" });
+    res.status(200).json({
+      message: "User updated successfully!",
+      user: {
+        id: user.id,
+        coins: user.coins,
+        password: user.password
+      }
+    });
+
   } catch (error) {
-    console.error("Update Error:", error); // Log the error
+    console.error("Update Error:", error);
     res.status(500).json({ message: "Something went wrong.", error: error.message });
   }
 };

@@ -144,6 +144,8 @@ const login = async (req, res) => {
     user.deviceID = deviceID;
     await user.save();
 
+    console.log("User logged in successfully:", user);
+
     return res
       .status(200)
       .json({ success: true, message: "Login successful.", user: user });

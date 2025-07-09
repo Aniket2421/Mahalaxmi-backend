@@ -2,27 +2,16 @@
 const mongoose = require('mongoose');
 
 const adminSchema = new mongoose.Schema({
-    mobileNumber: {
+    ID: {
         type: String,
     },
-    otp: {
-        type: Number,
-        default: 0,
-    },
-    availableCoinsToDistribute: {
-        type: Number,
-        default: 0,
-    },
+   
     password: {
         type: String,
     },
-    debitedAmount: {
+    Coin: {
         type: Number,
-        default: 0
-    },
-    creditedAmount: {
-        type: Number,
-        default: 0
+        default: 0,
     },
 }, {
     timestamps: true,

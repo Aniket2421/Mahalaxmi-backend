@@ -44,7 +44,6 @@ const userMasterSchema = new mongoose.Schema(
     ],
     deviceID: {
       type: String,
-      required: true,
     },
     game_version: { type: String },
   },

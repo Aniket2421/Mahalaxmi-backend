@@ -177,18 +177,29 @@ const get_ActiveUsers = async (req, res) => {
  * @description get All Users
  * @returns user object
  ******************************************************/
+
 const get_AllUsers = async (req, res) => {
     try {
-        const results = await UserMasterModel.find().sort({ createdAt: -1 });
-        if (!results) {
-            return res.status(404).json({
-                message: "Not Found Any Record"
-            });
-        }
+        const page = parseInt(req.query.page) || 1; // default to page 1
+        const limit = 5;
+        const skip = (page - 1) * limit;
+
+        const users = await UserMasterModel.find()
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalUsers = await UserMasterModel.countDocuments();
+        const totalPages = Math.ceil(totalUsers / limit);
+
         res.status(200).json({
-            message: "All Users",
-            Users: results
+            message: "Users fetched successfully",
+            currentPage: page,
+            totalPages,
+            totalUsers,
+            users
         });
+
     } catch (error) {
         console.error("Error get Users:", error);
         res.status(500).json({
@@ -196,6 +207,38 @@ const get_AllUsers = async (req, res) => {
         });
     }
 };
+/******************************************************
+ * @get_AllUsers
+ * @route http://localhost:5000/user/get_AllUsersWithoutPagination
+ * @description get All Users
+ * @returns user object
+ ******************************************************/
+
+const get_AllUsersWithoutPagination = async (req, res) => {
+    try {
+        const results = await UserMasterModel.find().sort({ createdAt: -1 }); // All users, latest first
+
+        if (!results || results.length === 0) {
+            return res.status(404).json({
+                message: "No users found"
+            });
+        }
+
+        res.status(200).json({
+            message: "All users fetched successfully",
+            users: results
+        });
+
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+};
+  
+
+
 
 /******************************************************
  * @get_revenue
@@ -314,4 +357,5 @@ module.exports = {
     get_revenue,
     add_coins,
     updateGame,
+    get_AllUsersWithoutPagination
 };

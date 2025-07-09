@@ -8,6 +8,7 @@ const {
     get_TopPlayer,
     get_ActiveUsers,
     get_AllUsers,
+    get_AllUsersWithoutPagination,
     get_revenue,
     add_coins,
 } = require('../controller/dashboard.controller');
@@ -26,6 +27,9 @@ router.get('/get_TrendingGame', get_TrendingGame);
 router.get('/get_TopPlayer', get_TopPlayer);
 router.get('/get_ActiveUsers', get_ActiveUsers);
 router.get('/get_AllUsers', get_AllUsers);
+router.get('/get_AllUsersWithoutPagination', get_AllUsersWithoutPagination
+);
+
 router.get('/get_revenue', get_revenue);
 router.put('/add_coins/:userId', add_coins);
 
